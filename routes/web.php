@@ -17,12 +17,15 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    if (! auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    return match (auth()->user()->role) {
+        'recruteur' => redirect()->route('job-offers.index'),
+        'admin' => redirect()->route('admin.moderation.index'),
+        default => redirect()->route('jobs.index'),
+    };
 });
 
 Route::get('/dashboard', function () {
