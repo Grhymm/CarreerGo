@@ -81,7 +81,7 @@ const submitReport = () => {
 
                         <span
                             v-if="jobOffer.guaranteed_response"
-                            class="inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700"
+                            class="inline-block rounded-full bg-secondary-100 px-3 py-1 text-xs font-medium text-secondary-800"
                         >
                             Réponse garantie
                         </span>
