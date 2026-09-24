@@ -7,11 +7,11 @@ defineProps({
 });
 
 const statusBadges = {
-    new: { label: 'Nouvelle', classes: 'bg-blue-100 text-blue-700' },
-    reviewing: { label: 'À l\'étude', classes: 'bg-yellow-100 text-yellow-700' },
-    interview: { label: 'Entretien', classes: 'bg-indigo-100 text-indigo-700' },
-    rejected: { label: 'Refusée', classes: 'bg-red-100 text-red-700' },
-    accepted: { label: 'Acceptée', classes: 'bg-green-100 text-green-700' },
+    new: { label: 'Nouvelle', classes: 'bg-tertiary-100 text-tertiary-800' },
+    reviewing: { label: 'À l\'étude', classes: 'bg-secondary-100 text-secondary-800' },
+    interview: { label: 'Entretien', classes: 'bg-primary-100 text-primary-800' },
+    rejected: { label: 'Refusée', classes: 'bg-gray-100 text-gray-700' },
+    accepted: { label: 'Acceptée', classes: 'bg-primary-600 text-white' },
 };
 </script>
 
@@ -47,7 +47,7 @@ const statusBadges = {
                                 <td class="px-6 py-4">
                                     <Link
                                         :href="route('jobs.show', application.job_offer.id)"
-                                        class="text-indigo-600 hover:text-indigo-900"
+                                        class="text-tertiary-600 hover:text-tertiary-800"
                                     >
                                         {{ application.job_offer.title }}
                                     </Link>

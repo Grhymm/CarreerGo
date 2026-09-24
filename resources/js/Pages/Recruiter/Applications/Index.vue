@@ -65,7 +65,7 @@ const changeStatus = (application, event) => {
                                 <div class="mt-3 flex items-center gap-2">
                                     <div class="h-2 w-full rounded-full bg-gray-200">
                                         <div
-                                            class="h-2 rounded-full bg-indigo-600"
+                                            class="h-2 rounded-full bg-primary-600"
                                             :style="{ width: application.compatibility_score + '%' }"
                                         ></div>
                                     </div>
@@ -75,7 +75,7 @@ const changeStatus = (application, event) => {
                                 </div>
 
                                 <select
-                                    class="mt-3 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="mt-3 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-primary-500 focus:ring-primary-500"
                                     :value="application.status"
                                     @change="changeStatus(application, $event)"
                                 >

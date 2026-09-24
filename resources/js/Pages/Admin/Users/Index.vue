@@ -61,7 +61,7 @@ const toggleCompanyVerification = (company) => {
                                 <td class="px-6 py-4">
                                     <span
                                         class="rounded-full px-3 py-1 text-xs font-medium"
-                                        :class="user.is_suspended ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'"
+                                        :class="user.is_suspended ? 'bg-red-100 text-red-700' : 'bg-primary-100 text-primary-700'"
                                     >
                                         {{ user.is_suspended ? 'Suspendu' : 'Actif' }}
                                     </span>
@@ -71,7 +71,7 @@ const toggleCompanyVerification = (company) => {
                                         <span>{{ user.company.name }}</span>
                                         <span
                                             class="rounded-full px-2 py-0.5 text-xs font-medium"
-                                            :class="user.company.is_verified ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
+                                            :class="user.company.is_verified ? 'bg-primary-100 text-primary-700' : 'bg-gray-100 text-gray-600'"
                                         >
                                             {{ user.company.is_verified ? 'Vérifiée' : 'Non vérifiée' }}
                                         </span>

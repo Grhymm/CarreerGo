@@ -49,12 +49,12 @@ const removeSkill = (name) => {
             <span
                 v-for="skill in form.skills"
                 :key="skill"
-                class="inline-flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-1 text-sm text-indigo-700"
+                class="inline-flex items-center gap-2 rounded-full bg-tertiary-50 px-3 py-1 text-sm text-tertiary-700"
             >
                 {{ skill }}
                 <button
                     type="button"
-                    class="text-indigo-500 hover:text-indigo-900"
+                    class="text-tertiary-400 hover:text-tertiary-800"
                     @click="removeSkill(skill)"
                 >
                     &times;

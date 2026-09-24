@@ -47,13 +47,13 @@ const submitReport = () => {
 
         <div class="py-12">
             <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
-                <Link :href="route('jobs.index')" class="mb-4 inline-block text-sm text-indigo-600 hover:text-indigo-900">
+                <Link :href="route('jobs.index')" class="mb-4 inline-block text-sm text-tertiary-600 hover:text-tertiary-800">
                     &larr; Retour aux offres
                 </Link>
 
                 <div
                     v-if="page.props.flash.success"
-                    class="mb-4 rounded-md bg-green-100 px-4 py-3 text-sm text-green-700"
+                    class="mb-4 rounded-md bg-primary-50 px-4 py-3 text-sm text-primary-700"
                 >
                     {{ page.props.flash.success }}
                 </div>
@@ -72,7 +72,7 @@ const submitReport = () => {
                                 {{ jobOffer.company.name }}
                                 <span
                                     v-if="jobOffer.company.is_verified"
-                                    class="ms-2 inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700"
+                                    class="ms-2 inline-block rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700"
                                 >
                                     Entreprise vérifiée
                                 </span>
@@ -109,7 +109,7 @@ const submitReport = () => {
                             <span
                                 v-for="skill in jobOffer.skills"
                                 :key="skill.id"
-                                class="rounded-full bg-indigo-100 px-3 py-1 text-sm text-indigo-700"
+                                class="rounded-full bg-tertiary-50 px-3 py-1 text-sm text-tertiary-700"
                             >
                                 {{ skill.name }}
                             </span>
@@ -121,7 +121,7 @@ const submitReport = () => {
                         <div class="mt-2 flex items-center gap-3">
                             <div class="h-2.5 w-full rounded-full bg-gray-200">
                                 <div
-                                    class="h-2.5 rounded-full bg-indigo-600"
+                                    class="h-2.5 rounded-full bg-primary-600"
                                     :style="{ width: compatibilityScore + '%' }"
                                 ></div>
                             </div>
@@ -151,7 +151,7 @@ const submitReport = () => {
 
                         <form v-if="showReportForm" @submit.prevent="submitReport" class="mt-3 max-w-md">
                             <textarea
-                                class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-primary-500 focus:ring-primary-500"
                                 rows="3"
                                 v-model="reportForm.reason"
                                 placeholder="Expliquez pourquoi cette offre vous paraît suspecte..."

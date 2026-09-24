@@ -62,7 +62,7 @@ const submit = () => {
                             <InputLabel for="description" value="Description" />
                             <textarea
                                 id="description"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                                 rows="5"
                                 v-model="form.description"
                                 required
@@ -86,7 +86,7 @@ const submit = () => {
                             <InputLabel for="contract_type" value="Type de contrat" />
                             <select
                                 id="contract_type"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                                 v-model="form.contract_type"
                                 required
                             >

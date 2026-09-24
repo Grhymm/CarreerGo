@@ -13,9 +13,24 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                heading: ['"Work Sans"', ...defaultTheme.fontFamily.sans],
             },
             colors: {
+                // Neutre de la charte (#757875) : remplace le gris Tailwind par défaut partout.
+                gray: {
+                    50: '#F7F8F7',
+                    100: '#EFF0EF',
+                    200: '#DEE0DE',
+                    300: '#C4C7C4',
+                    400: '#9C9F9C',
+                    500: '#757875',
+                    600: '#5D605D',
+                    700: '#4A4C4A',
+                    800: '#333533',
+                    900: '#1F211F',
+                    950: '#121312',
+                },
                 primary: {
                     DEFAULT: '#0F4C3A',
                     50: '#F3F6F5',

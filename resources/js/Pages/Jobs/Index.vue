@@ -60,7 +60,7 @@ const search = () => {
                             <InputLabel for="contract_type" value="Type de contrat" />
                             <select
                                 id="contract_type"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                                 v-model="form.contract_type"
                             >
                                 <option value="">Tous</option>
@@ -92,7 +92,7 @@ const search = () => {
                         <p class="mt-1 text-sm text-gray-600">
                             {{ jobOffer.company.name }} — {{ jobOffer.location }}
                         </p>
-                        <span class="mt-2 inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700">
+                        <span class="mt-2 inline-block rounded-full bg-tertiary-50 px-3 py-1 text-xs font-medium text-tertiary-700">
                             {{ jobOffer.contract_type }}
                         </span>
                     </Link>

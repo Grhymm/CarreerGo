@@ -58,7 +58,7 @@ const destroy = (jobOffer) => {
                                 <td class="px-6 py-4 text-right">
                                     <Link
                                         :href="route('job-offers.edit', jobOffer.id)"
-                                        class="me-4 text-indigo-600 hover:text-indigo-900"
+                                        class="me-4 text-tertiary-600 hover:text-tertiary-800"
                                     >
                                         Modifier
                                     </Link>

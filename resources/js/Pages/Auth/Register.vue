@@ -104,7 +104,7 @@ const submit = () => {
                             name="role"
                             value="candidat"
                             v-model="form.role"
-                            class="text-indigo-600 focus:ring-indigo-500"
+                            class="text-primary-600 focus:ring-primary-500"
                         />
                         <span class="ms-2 text-sm text-gray-600">Candidat</span>
                     </label>
@@ -115,7 +115,7 @@ const submit = () => {
                             name="role"
                             value="recruteur"
                             v-model="form.role"
-                            class="text-indigo-600 focus:ring-indigo-500"
+                            class="text-primary-600 focus:ring-primary-500"
                         />
                         <span class="ms-2 text-sm text-gray-600">Recruteur</span>
                     </label>
@@ -142,7 +142,7 @@ const submit = () => {
             <div class="mt-4 flex items-center justify-end">
                 <Link
                     :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 >
                     Already registered?
                 </Link>
