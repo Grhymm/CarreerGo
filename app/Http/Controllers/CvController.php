@@ -8,9 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CvController extends Controller
 {
-    /**
-     * Generate and download the authenticated candidate's CV as a PDF.
-     */
     public function download(Request $request): Response
     {
         $user = $request->user();

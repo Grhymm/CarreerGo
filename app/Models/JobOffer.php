@@ -12,11 +12,6 @@ class JobOffer extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'company_id',
         'user_id',
@@ -33,11 +28,6 @@ class JobOffer extends Model
         'status',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -71,9 +61,6 @@ class JobOffer extends Model
         return $this->hasMany(Report::class);
     }
 
-    /**
-     * Percentage of this offer's required skills that the given user also has.
-     */
     public function compatibilityScoreFor(User $user): int
     {
         $requiredSkillIds = $this->skills->pluck('id');

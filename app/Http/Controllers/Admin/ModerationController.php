@@ -11,9 +11,6 @@ use Inertia\Response;
 
 class ModerationController extends Controller
 {
-    /**
-     * Display the queue of job offers awaiting moderation.
-     */
     public function index(): Response
     {
         $jobOffers = JobOffer::with(['company', 'user'])
@@ -26,9 +23,6 @@ class ModerationController extends Controller
         ]);
     }
 
-    /**
-     * Approve or reject a pending job offer.
-     */
     public function update(Request $request, JobOffer $jobOffer): RedirectResponse
     {
         if ($jobOffer->status !== 'pending') {

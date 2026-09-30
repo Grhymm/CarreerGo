@@ -1,7 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
-/** @type {import('tailwindcss').Config} */
 export default {
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
@@ -17,7 +16,6 @@ export default {
                 heading: ['"Work Sans"', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                // Neutre de la charte (#757875) : remplace le gris Tailwind par défaut partout.
                 gray: {
                     50: '#F7F8F7',
                     100: '#EFF0EF',

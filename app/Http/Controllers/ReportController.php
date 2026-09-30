@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    /**
-     * Report a job offer as suspicious.
-     */
     public function store(Request $request, JobOffer $jobOffer): RedirectResponse
     {
         $validated = $request->validate([

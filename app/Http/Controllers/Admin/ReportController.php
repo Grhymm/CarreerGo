@@ -11,9 +11,6 @@ use Inertia\Response;
 
 class ReportController extends Controller
 {
-    /**
-     * Display the queue of reports awaiting review.
-     */
     public function index(): Response
     {
         $reports = Report::with(['jobOffer.company', 'reporter'])
@@ -26,9 +23,6 @@ class ReportController extends Controller
         ]);
     }
 
-    /**
-     * Mark a report as reviewed or dismissed.
-     */
     public function update(Request $request, Report $report): RedirectResponse
     {
         if ($report->status !== 'pending') {

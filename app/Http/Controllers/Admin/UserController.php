@@ -11,9 +11,6 @@ use Inertia\Response;
 
 class UserController extends Controller
 {
-    /**
-     * Display all user accounts.
-     */
     public function index(): Response
     {
         $users = User::with('company')->latest()->get();
@@ -23,9 +20,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Toggle the suspension status of a user account.
-     */
     public function toggleSuspension(Request $request, User $user): RedirectResponse
     {
         if ($user->id === $request->user()->id) {

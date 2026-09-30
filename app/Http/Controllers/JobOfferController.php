@@ -11,9 +11,6 @@ use Inertia\Response;
 
 class JobOfferController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request): Response
     {
         $jobOffers = $request->user()->jobOffers()->latest()->get();
@@ -23,17 +20,11 @@ class JobOfferController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): Response
     {
         return Inertia::render('JobOffers/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->validateJobOffer($request);
@@ -49,9 +40,6 @@ class JobOfferController extends Controller
         return redirect()->route('job-offers.index');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Request $request, JobOffer $jobOffer): Response
     {
         if ($jobOffer->user_id !== $request->user()->id) {
@@ -63,9 +51,6 @@ class JobOfferController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, JobOffer $jobOffer): RedirectResponse
     {
         if ($jobOffer->user_id !== $request->user()->id) {
@@ -81,9 +66,6 @@ class JobOfferController extends Controller
         return redirect()->route('job-offers.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Request $request, JobOffer $jobOffer): RedirectResponse
     {
         if ($jobOffer->user_id !== $request->user()->id) {
@@ -95,11 +77,6 @@ class JobOfferController extends Controller
         return redirect()->route('job-offers.index');
     }
 
-    /**
-     * Validate the incoming job offer request data.
-     *
-     * @return array<string, mixed>
-     */
     private function validateJobOffer(Request $request): array
     {
         return $request->validate([
@@ -116,11 +93,6 @@ class JobOfferController extends Controller
         ]);
     }
 
-    /**
-     * Create missing skills and sync them onto the job offer.
-     *
-     * @param  array<int, string>  $skillNames
-     */
     private function syncSkills(JobOffer $jobOffer, array $skillNames): void
     {
         $skillIds = collect($skillNames)

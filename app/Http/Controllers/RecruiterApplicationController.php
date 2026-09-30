@@ -10,9 +10,6 @@ use Inertia\Response;
 
 class RecruiterApplicationController extends Controller
 {
-    /**
-     * Display the applications received on the authenticated recruiter's job offers.
-     */
     public function index(Request $request): Response
     {
         $applications = Application::query()
@@ -34,9 +31,6 @@ class RecruiterApplicationController extends Controller
         ]);
     }
 
-    /**
-     * Update the status of an application received on the authenticated recruiter's job offer.
-     */
     public function update(Request $request, Application $application): RedirectResponse
     {
         if ($application->jobOffer->user_id !== $request->user()->id) {

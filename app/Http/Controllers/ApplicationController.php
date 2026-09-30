@@ -10,9 +10,6 @@ use Inertia\Response;
 
 class ApplicationController extends Controller
 {
-    /**
-     * Display the authenticated candidate's applications.
-     */
     public function index(Request $request): Response
     {
         $applications = $request->user()
@@ -26,9 +23,6 @@ class ApplicationController extends Controller
         ]);
     }
 
-    /**
-     * Apply to a published job offer.
-     */
     public function store(Request $request, JobOffer $jobOffer): RedirectResponse
     {
         abort_unless($jobOffer->status === 'published', 404);

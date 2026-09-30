@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class ExperienceController extends Controller
 {
-    /**
-     * Store a newly created experience for the authenticated candidate.
-     */
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->validateExperience($request);
@@ -20,9 +17,6 @@ class ExperienceController extends Controller
         return back();
     }
 
-    /**
-     * Update an existing experience owned by the authenticated candidate.
-     */
     public function update(Request $request, Experience $experience): RedirectResponse
     {
         if ($experience->user_id !== $request->user()->id) {
@@ -36,9 +30,6 @@ class ExperienceController extends Controller
         return back();
     }
 
-    /**
-     * Delete an experience owned by the authenticated candidate.
-     */
     public function destroy(Request $request, Experience $experience): RedirectResponse
     {
         if ($experience->user_id !== $request->user()->id) {
@@ -50,11 +41,6 @@ class ExperienceController extends Controller
         return back();
     }
 
-    /**
-     * Validate the incoming experience request data.
-     *
-     * @return array<string, mixed>
-     */
     private function validateExperience(Request $request): array
     {
         return $request->validate([

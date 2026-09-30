@@ -1,5 +1,4 @@
 <template>
-    <!-- Logotype CareerGO : texte vectoriel, la hauteur passée en classe pilote la taille. -->
     <svg
         viewBox="0 0 196 48"
         xmlns="http://www.w3.org/2000/svg"

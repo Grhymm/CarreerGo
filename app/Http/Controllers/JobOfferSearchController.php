@@ -9,9 +9,6 @@ use Inertia\Response;
 
 class JobOfferSearchController extends Controller
 {
-    /**
-     * Display a searchable list of published job offers.
-     */
     public function index(Request $request): Response
     {
         $filters = $request->only(['keyword', 'location', 'contract_type']);
@@ -31,9 +28,6 @@ class JobOfferSearchController extends Controller
         ]);
     }
 
-    /**
-     * Display a published job offer with its compatibility score for the current user.
-     */
     public function show(Request $request, JobOffer $jobOffer): Response
     {
         abort_unless($jobOffer->status === 'published', 404);
