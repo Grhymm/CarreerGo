@@ -2,14 +2,22 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    public function test_guests_are_redirected_from_root_to_login(): void
+    use RefreshDatabase;
+
+    public function test_guests_see_the_public_home_page(): void
     {
         $response = $this->get('/');
 
-        $response->assertRedirect(route('login'));
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Welcome')
+            ->has('publishedOffersCount')
+        );
     }
 }

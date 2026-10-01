@@ -12,7 +12,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
-    role: 'candidat',
+    role: new URLSearchParams(window.location.search).get('role') === 'recruteur' ? 'recruteur' : 'candidat',
     company_name: '',
 });
 

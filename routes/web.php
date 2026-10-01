@@ -12,13 +12,16 @@ use App\Http\Controllers\JobOfferSearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecruiterApplicationController;
 use App\Http\Controllers\ReportController;
+use App\Models\JobOffer;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     if (! auth()->check()) {
-        return redirect()->route('login');
+        return Inertia::render('Welcome', [
+            'publishedOffersCount' => JobOffer::where('status', 'published')->count(),
+        ]);
     }
 
     return match (auth()->user()->role) {
