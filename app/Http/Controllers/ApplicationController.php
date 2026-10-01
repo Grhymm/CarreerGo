@@ -16,7 +16,8 @@ class ApplicationController extends Controller
             ->applications()
             ->with('jobOffer.company')
             ->latest()
-            ->get();
+            ->get()
+            ->each(fn ($application) => $application->jobOffer->hideSalaryUnlessShown());
 
         return Inertia::render('Applications/Index', [
             'applications' => $applications,

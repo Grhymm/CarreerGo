@@ -20,7 +20,8 @@ class JobOfferSearchController extends Controller
             ->when($filters['location'] ?? null, fn ($query, $location) => $query->where('location', 'like', "%{$location}%"))
             ->when($filters['contract_type'] ?? null, fn ($query, $contractType) => $query->where('contract_type', $contractType))
             ->latest()
-            ->get();
+            ->get()
+            ->each->hideSalaryUnlessShown();
 
         return Inertia::render('Jobs/Index', [
             'jobOffers' => $jobOffers,
@@ -32,7 +33,7 @@ class JobOfferSearchController extends Controller
     {
         abort_unless($jobOffer->status === 'published', 404);
 
-        $jobOffer->load(['company', 'skills', 'user']);
+        $jobOffer->load(['company', 'skills', 'user'])->hideSalaryUnlessShown();
 
         $hasApplied = $jobOffer->applications()
             ->where('user_id', $request->user()->id)

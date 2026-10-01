@@ -61,6 +61,15 @@ class JobOffer extends Model
         return $this->hasMany(Report::class);
     }
 
+    public function hideSalaryUnlessShown(): static
+    {
+        if (! $this->show_salary) {
+            $this->makeHidden(['salary_min', 'salary_max']);
+        }
+
+        return $this;
+    }
+
     public function compatibilityScoreFor(User $user): int
     {
         $requiredSkillIds = $this->skills->pluck('id');
