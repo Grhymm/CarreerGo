@@ -10,6 +10,9 @@ Branche : `feat/refonte-visuelle-equatorial` (non fusionnée dans `master`).
 | `d427a72` | Maquettes de référence dans `docs/maquettes/` |
 | `aed03dd` | Messages du serveur en français |
 | `35701a9` | Salaire masqué retiré des données envoyées aux candidats |
+| `ba19fba` | Ce guide |
+| `d721029` | Page d'accueil publique pour les invités |
+| (suivant) | « / » d'un utilisateur connecté → `/dashboard` pour les trois rôles |
 
 Les quatre lots ont été réalisés dans le même commit `3b29d87` ; le découpage ci-dessous sert à la relecture.
 
@@ -81,7 +84,7 @@ Fond assombri à l'encre et coins arrondis ; logique d'ouverture et de fermeture
 
 **`Layouts/AuthenticatedLayout.vue`**
 Barre latérale sur ordinateur, barre de navigation en bas sur mobile, menu du compte en haut.
-Les liens dépendent du rôle (candidat, recruteur, admin) ; `aria-current="page"` sur le lien actif.
+Les liens dépendent du rôle ; tous commencent par « Accueil ». La barre mobile affiche au plus 4 liens plus « Profil ».
 Contient le lien « Aller au contenu » et `FlashMessages`, une seule fois pour toutes les pages.
 
 **`Layouts/GuestLayout.vue`**
@@ -120,8 +123,9 @@ Deux messages ont une formulation dédiée : date de fin et salaire maximum.
 Langue par défaut `fr` (et `APP_LOCALE=fr` dans le `.env` local, non versionné).
 
 **`tests/Feature/ExampleTest.php`**
-Vérifie qu'un invité qui ouvre `/` est redirigé vers `/login`.
-Corrige un test resté à l'attendu Breeze (code 200) après le Prompt 17.
+Vérifie qu'un invité qui ouvre `/` voit la page d'accueil publique `Welcome` (code 200).
+D'abord aligné sur la redirection vers `/login` du Prompt 17 (`bed04e2`), puis sur la page d'accueil (`d721029`).
+`WelcomePageTest` couvre le compteur d'offres, la déconnexion et la redirection des connectés vers `/dashboard`.
 
 ---
 

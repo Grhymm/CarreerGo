@@ -50,18 +50,12 @@ class WelcomePageTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page->component('Welcome'));
     }
 
-    public function test_connected_users_are_still_redirected_according_to_their_role(): void
+    public function test_connected_users_are_redirected_to_the_dashboard_whatever_their_role(): void
     {
-        $this->actingAs(User::factory()->candidat()->create())
-            ->get('/')
-            ->assertRedirect(route('jobs.index'));
-
-        $this->actingAs(User::factory()->recruteur()->create())
-            ->get('/')
-            ->assertRedirect(route('job-offers.index'));
-
-        $this->actingAs(User::factory()->admin()->create())
-            ->get('/')
-            ->assertRedirect(route('admin.moderation.index'));
+        foreach (['candidat', 'recruteur', 'admin'] as $role) {
+            $this->actingAs(User::factory()->{$role}()->create())
+                ->get('/')
+                ->assertRedirect(route('dashboard'));
+        }
     }
 }

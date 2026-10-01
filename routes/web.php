@@ -24,11 +24,7 @@ Route::get('/', function () {
         ]);
     }
 
-    return match (auth()->user()->role) {
-        'recruteur' => redirect()->route('job-offers.index'),
-        'admin' => redirect()->route('admin.moderation.index'),
-        default => redirect()->route('jobs.index'),
-    };
+    return redirect()->route('dashboard');
 });
 
 Route::get('/dashboard', function () {

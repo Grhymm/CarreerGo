@@ -35,6 +35,7 @@ const navigation = computed(() => {
             jobs,
         ],
         admin: [
+            home,
             { label: 'Modération', route: 'admin.moderation.index', active: 'admin.moderation.*', icon: 'shield' },
             { label: 'Utilisateurs', route: 'admin.users.index', active: 'admin.users.*', icon: 'users' },
             { label: 'Signalements', route: 'admin.reports.index', active: 'admin.reports.*', icon: 'flag' },
@@ -44,6 +45,8 @@ const navigation = computed(() => {
 });
 
 const profileItem = { label: 'Profil', route: 'profile.edit', active: 'profile.*', icon: 'user' };
+
+const mobileNavigation = computed(() => [...navigation.value.slice(0, 4), profileItem]);
 
 const isActive = (item) => route().current(item.active);
 </script>
@@ -169,7 +172,7 @@ const isActive = (item) => route().current(item.active);
             class="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] lg:hidden"
         >
             <ul class="mx-auto flex max-w-md justify-around">
-                <li v-for="item in [...navigation, profileItem]" :key="item.route" class="flex-1">
+                <li v-for="item in mobileNavigation" :key="item.route" class="flex-1">
                     <Link
                         :href="route(item.route)"
                         :aria-current="isActive(item) ? 'page' : undefined"
