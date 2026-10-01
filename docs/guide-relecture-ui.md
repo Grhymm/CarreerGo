@@ -222,11 +222,14 @@ Compteur réel des signalements en attente.
 **`docs/maquettes/`** (commit `d427a72`)
 Les 9 maquettes de référence (B1 à B6d), versionnées pour la relecture.
 
-**Reste à faire dans ce lot**
-- Données de démonstration : `DemoUsersSeeder` ne crée que trois comptes et une entreprise, sans offre.
-- Vérification visuelle dans un navigateur, sur mobile et sur ordinateur.
-- Suppression de `NavLink.vue` et `ResponsiveNavLink.vue`, qui ne sont plus utilisés.
-- Non retouchés : `Pages/Welcome.vue` (aucune route ne l'affiche) et `views/pdf/cv.blade.php`.
+**Ajouts ultérieurs dans ce lot**
+- `Pages/Welcome.vue` : page d'accueil publique des invités (commit `d721029`).
+- `database/seeders/DemoContentSeeder.php` : entreprises, offres et candidatures de démonstration au Gabon (commit `b13aa93`).
+- `views/pdf/cv.blade.php` : CV PDF au style Équatorial, compatible dompdf (commit `4e641bb`).
+- `NavLink.vue` et `ResponsiveNavLink.vue`, devenus inutiles, ont été supprimés.
+
+**Reste à faire**
+- Vérification visuelle dans un navigateur, sur mobile et sur ordinateur, y compris la page d'accueil et le CV PDF.
 
 ---
 
