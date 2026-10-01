@@ -84,6 +84,23 @@ URL à chaque nouvelle session de démonstration.
 (Créés via `DemoUsersSeeder` — `php artisan db:seed --class=DemoUsersSeeder`
 si besoin de les recréer.)
 
+## Contenu de démonstration
+
+```
+php artisan db:seed --class=DemoContentSeeder
+```
+
+À lancer après `DemoUsersSeeder`, dont il réutilise les comptes sans les
+modifier. Il crée 4 entreprises fictives marquées « (démo) », 8 offres à
+Libreville, Port-Gentil, Franceville et Oyem (CDI, CDD, stage, freelance ;
+salaires en FCFA), leurs compétences et 5 candidatures du candidat de démo
+aux statuts variés. Une offre reste « en attente » pour la démonstration de
+la modération. Il relocalise aussi au Gabon les offres situées dans une
+ville marocaine.
+
+Le seeder est rejouable sans doublons ; le rejouer remet les offres et les
+candidatures de démo dans leur état initial (statuts compris).
+
 ## Dépannage
 
 - **Page blanche après connexion via l'URL ngrok** : signe que les assets
