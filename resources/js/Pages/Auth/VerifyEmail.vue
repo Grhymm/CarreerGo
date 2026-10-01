@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Button from '@/Components/ui/Button.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -22,40 +22,33 @@ const verificationLinkSent = computed(
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Email Verification" />
-
-        <div class="mb-4 text-sm text-gray-600">
-            Thanks for signing up! Before getting started, could you verify your
-            email address by clicking on the link we just emailed to you? If you
-            didn't receive the email, we will gladly send you another.
-        </div>
+    <GuestLayout
+        title="Vérifiez votre adresse e-mail"
+        description="Merci pour votre inscription ! Avant de commencer, cliquez sur le lien que nous venons de vous envoyer par e-mail. Vous ne l'avez pas reçu ? Nous pouvons vous en envoyer un nouveau."
+    >
+        <Head title="Vérification de l'adresse e-mail" />
 
         <div
-            class="mb-4 text-sm font-medium text-primary-600"
             v-if="verificationLinkSent"
+            role="status"
+            class="mb-4 rounded-xl bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-800"
         >
-            A new verification link has been sent to the email address you
-            provided during registration.
+            Un nouveau lien de vérification vient d'être envoyé à l'adresse indiquée lors de votre inscription.
         </div>
 
-        <form @submit.prevent="submit">
-            <div class="mt-4 flex items-center justify-between">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Resend Verification Email
-                </PrimaryButton>
+        <form class="space-y-4" @submit.prevent="submit">
+            <Button type="submit" block size="lg" :loading="form.processing">
+                Renvoyer l'e-mail de vérification
+            </Button>
 
-                <Link
-                    :href="route('logout')"
-                    method="post"
-                    as="button"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                    >Log Out</Link
-                >
-            </div>
+            <Link
+                :href="route('logout')"
+                method="post"
+                as="button"
+                class="block w-full text-center text-sm font-semibold text-primary-700 underline-offset-2 hover:underline"
+            >
+                Se déconnecter
+            </Link>
         </form>
     </GuestLayout>
 </template>

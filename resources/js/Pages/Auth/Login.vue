@@ -3,9 +3,10 @@ import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import Button from '@/Components/ui/Button.vue';
+import FlashMessages from '@/Components/ui/FlashMessages.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps({
     canResetPassword: {
@@ -15,8 +16,6 @@ defineProps({
         type: String,
     },
 });
-
-const page = usePage();
 
 const form = useForm({
     email: '',
@@ -32,75 +31,67 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Log in" />
+    <GuestLayout title="Bon retour parmi nous" description="Connectez-vous pour retrouver vos offres et vos candidatures.">
+        <Head title="Connexion" />
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-primary-600">
+        <div v-if="status" role="status" class="mb-4 rounded-xl bg-primary-50 px-4 py-3 text-sm font-semibold text-primary-800">
             {{ status }}
         </div>
 
-        <div v-if="page.props.flash.error" class="mb-4 rounded-md bg-red-100 px-4 py-3 text-sm text-red-700">
-            {{ page.props.flash.error }}
-        </div>
+        <FlashMessages class="mb-4" />
 
-        <form @submit.prevent="submit">
+        <form class="space-y-5" @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
-
+                <InputLabel for="email" value="Adresse e-mail" />
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1.5"
                     v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
                 />
-
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
+            <div>
+                <div class="flex items-center justify-between">
+                    <InputLabel for="password" value="Mot de passe" />
+                    <Link
+                        v-if="canResetPassword"
+                        :href="route('password.request')"
+                        class="text-sm font-semibold text-tertiary-700 underline-offset-2 hover:underline"
+                    >
+                        Mot de passe oublié ?
+                    </Link>
+                </div>
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1.5"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
                 />
-
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4 block">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
-                    >
-                </label>
-            </div>
+            <label class="flex min-h-11 items-center gap-3">
+                <Checkbox name="remember" v-model:checked="form.remember" />
+                <span class="text-sm text-ink">Rester connecté sur cet appareil</span>
+            </label>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                >
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Log in
-                </PrimaryButton>
-            </div>
+            <Button type="submit" block size="lg" :loading="form.processing">
+                Se connecter
+            </Button>
         </form>
+
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Pas encore de compte ?
+            <Link :href="route('register')" class="font-semibold text-primary-700 underline-offset-2 hover:underline">
+                Créer un compte
+            </Link>
+        </p>
     </GuestLayout>
 </template>

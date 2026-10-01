@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-cream font-sans text-ink;
+    }
+
     h1,
     h2,
     h3,
@@ -10,5 +18,31 @@
     h5,
     h6 {
         @apply font-heading;
+    }
+
+    :focus-visible {
+        outline: 2px solid theme('colors.tertiary.600');
+        outline-offset: 2px;
+    }
+}
+
+@layer components {
+    .ui-input {
+        @apply block w-full rounded-lg border-gray-300 bg-white text-sm text-ink shadow-sm placeholder:text-gray-500 focus:border-primary-600 focus:ring-primary-600 disabled:bg-gray-100;
+    }
+
+    .ui-label-caps {
+        @apply text-xs font-semibold uppercase tracking-wider text-gray-600;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }

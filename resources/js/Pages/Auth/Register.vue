@@ -2,8 +2,9 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Button from '@/Components/ui/Button.vue';
+import ChoiceChips from '@/Components/ui/ChoiceChips.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
@@ -15,6 +16,11 @@ const form = useForm({
     company_name: '',
 });
 
+const roles = [
+    { value: 'candidat', label: 'Je cherche un emploi' },
+    { value: 'recruteur', label: 'Je recrute' },
+];
+
 const submit = () => {
     form.post(route('register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
@@ -23,138 +29,91 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Register" />
+    <GuestLayout title="Créer votre compte" description="Quelques informations suffisent pour commencer.">
+        <Head title="Inscription" />
 
-        <form @submit.prevent="submit">
+        <form class="space-y-5" @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
+                <ChoiceChips v-model="form.role" :options="roles" name="role" legend="Vous êtes ici pour…" layout="grid" />
+                <InputError class="mt-2" :message="form.errors.role" />
+            </div>
 
+            <div>
+                <InputLabel for="name" value="Nom complet" />
                 <TextInput
                     id="name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="mt-1.5"
                     v-model="form.name"
                     required
                     autofocus
                     autocomplete="name"
                 />
-
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
-
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel value="Je m'inscris en tant que" />
-
-                <div class="mt-2 flex gap-6">
-                    <label class="flex items-center">
-                        <input
-                            type="radio"
-                            name="role"
-                            value="candidat"
-                            v-model="form.role"
-                            class="text-primary-600 focus:ring-primary-500"
-                        />
-                        <span class="ms-2 text-sm text-gray-600">Candidat</span>
-                    </label>
-
-                    <label class="flex items-center">
-                        <input
-                            type="radio"
-                            name="role"
-                            value="recruteur"
-                            v-model="form.role"
-                            class="text-primary-600 focus:ring-primary-500"
-                        />
-                        <span class="ms-2 text-sm text-gray-600">Recruteur</span>
-                    </label>
-                </div>
-
-                <InputError class="mt-2" :message="form.errors.role" />
-            </div>
-
-            <div class="mt-4" v-if="form.role === 'recruteur'">
+            <div v-if="form.role === 'recruteur'">
                 <InputLabel for="company_name" value="Nom de l'entreprise" />
-
                 <TextInput
                     id="company_name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="mt-1.5"
                     v-model="form.company_name"
                     required
                     autocomplete="organization"
                 />
-
                 <InputError class="mt-2" :message="form.errors.company_name" />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                >
-                    Already registered?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Register
-                </PrimaryButton>
+            <div>
+                <InputLabel for="email" value="Adresse e-mail" />
+                <TextInput
+                    id="email"
+                    type="email"
+                    class="mt-1.5"
+                    v-model="form.email"
+                    required
+                    autocomplete="username"
+                />
+                <InputError class="mt-2" :message="form.errors.email" />
             </div>
+
+            <div>
+                <InputLabel for="password" value="Mot de passe" />
+                <TextInput
+                    id="password"
+                    type="password"
+                    class="mt-1.5"
+                    v-model="form.password"
+                    required
+                    autocomplete="new-password"
+                />
+                <InputError class="mt-2" :message="form.errors.password" />
+            </div>
+
+            <div>
+                <InputLabel for="password_confirmation" value="Confirmez le mot de passe" />
+                <TextInput
+                    id="password_confirmation"
+                    type="password"
+                    class="mt-1.5"
+                    v-model="form.password_confirmation"
+                    required
+                    autocomplete="new-password"
+                />
+                <InputError class="mt-2" :message="form.errors.password_confirmation" />
+            </div>
+
+            <Button type="submit" block size="lg" :loading="form.processing">
+                Créer mon compte
+            </Button>
         </form>
+
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Vous avez déjà un compte ?
+            <Link :href="route('login')" class="font-semibold text-primary-700 underline-offset-2 hover:underline">
+                Se connecter
+            </Link>
+        </p>
     </GuestLayout>
 </template>

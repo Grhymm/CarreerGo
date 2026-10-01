@@ -16,6 +16,9 @@ export default {
                 heading: ['"Work Sans"', ...defaultTheme.fontFamily.sans],
             },
             colors: {
+                cream: '#FBF7EE',
+                sand: '#F1E9D8',
+                ink: '#1B2B25',
                 gray: {
                     50: '#F7F8F7',
                     100: '#EFF0EF',
@@ -68,6 +71,9 @@ export default {
                     800: '#0E4153',
                     900: '#0A323F',
                 },
+            },
+            boxShadow: {
+                card: '0 1px 2px rgba(27, 43, 37, 0.06), 0 1px 3px rgba(27, 43, 37, 0.04)',
             },
         },
     },

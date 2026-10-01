@@ -1,10 +1,15 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Avatar from '@/Components/ui/Avatar.vue';
+import Badge from '@/Components/ui/Badge.vue';
+import Button from '@/Components/ui/Button.vue';
+import Card from '@/Components/ui/Card.vue';
+import Icon from '@/Components/ui/Icon.vue';
+import ProgressBar from '@/Components/ui/ProgressBar.vue';
+import { formatAmount, formatDate, formatSalaryRange } from '@/utils/format';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
     jobOffer: Object,
@@ -14,8 +19,15 @@ const props = defineProps({
 
 const page = usePage();
 
+const isCandidat = computed(() => page.props.auth.user.role === 'candidat');
+
+const applying = ref(false);
+
 const apply = () => {
-    router.post(route('applications.store', props.jobOffer.id));
+    router.post(route('applications.store', props.jobOffer.id), {}, {
+        onStart: () => (applying.value = true),
+        onFinish: () => (applying.value = false),
+    });
 };
 
 const showReportForm = ref(false);
@@ -33,143 +45,168 @@ const submitReport = () => {
         },
     });
 };
+
+const facts = computed(() => {
+    const offer = props.jobOffer;
+    const items = [{ label: 'Contrat', value: offer.contract_type }];
+
+    if (offer.contract_type === 'Stage') {
+        if (offer.stage_duration_months) {
+            items.push({ label: 'Durée', value: `${offer.stage_duration_months} mois` });
+        }
+        if (offer.stage_stipend) {
+            items.push({ label: 'Gratification', value: `${formatAmount(offer.stage_stipend)} FCFA / mois` });
+        }
+    }
+
+    const salary = offer.show_salary ? formatSalaryRange(offer.salary_min, offer.salary_max) : null;
+
+    if (salary) {
+        items.push({ label: 'Rémunération', value: salary });
+    }
+
+    return items;
+});
 </script>
 
 <template>
     <Head :title="jobOffer.title" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Détail de l'offre
-            </h2>
-        </template>
+        <Link
+            :href="route('jobs.index')"
+            class="mb-4 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-tertiary-700 hover:underline"
+        >
+            <Icon name="chevronLeft" size="sm" />
+            Retour aux offres
+        </Link>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-3xl sm:px-6 lg:px-8">
-                <Link :href="route('jobs.index')" class="mb-4 inline-block text-sm text-tertiary-600 hover:text-tertiary-800">
-                    &larr; Retour aux offres
-                </Link>
+        <div class="grid gap-6 lg:grid-cols-[1fr_20rem]">
+            <div class="space-y-6">
+                <Card padding="lg">
+                    <div class="flex items-start justify-between gap-4">
+                        <Avatar :name="jobOffer.company.name" size="lg" square />
+                        <Badge v-if="jobOffer.guaranteed_response" tone="accent" icon="check">Réponse garantie</Badge>
+                    </div>
 
-                <div
-                    v-if="page.props.flash.success"
-                    class="mb-4 rounded-md bg-primary-50 px-4 py-3 text-sm text-primary-700"
-                >
-                    {{ page.props.flash.success }}
-                </div>
-                <div
-                    v-if="page.props.flash.error"
-                    class="mb-4 rounded-md bg-red-100 px-4 py-3 text-sm text-red-700"
-                >
-                    {{ page.props.flash.error }}
-                </div>
+                    <h1 class="mt-4 text-2xl font-bold leading-tight sm:text-3xl">{{ jobOffer.title }}</h1>
 
-                <div class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-900">{{ jobOffer.title }}</h1>
-                            <p class="mt-1 text-gray-600">
-                                {{ jobOffer.company.name }}
-                                <span
-                                    v-if="jobOffer.company.is_verified"
-                                    class="ms-2 inline-block rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-700"
-                                >
-                                    Entreprise vérifiée
-                                </span>
-                            </p>
+                    <div class="mt-3 flex flex-col gap-2 text-sm text-gray-600 sm:flex-row sm:flex-wrap sm:gap-x-5">
+                        <span class="inline-flex items-center gap-1.5">
+                            <Icon name="building" size="sm" />
+                            {{ jobOffer.company.name }}
+                            <span v-if="jobOffer.company.is_verified" class="inline-flex items-center gap-1 font-semibold text-primary-700">
+                                <Icon name="badgeCheck" size="sm" />
+                                Entreprise vérifiée
+                            </span>
+                        </span>
+                        <span class="inline-flex items-center gap-1.5">
+                            <Icon name="pin" size="sm" />
+                            {{ jobOffer.location }}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5">
+                            <Icon name="calendar" size="sm" />
+                            Déposée le {{ formatDate(jobOffer.created_at, { day: 'numeric', month: 'long', year: 'numeric' }) }}
+                        </span>
+                    </div>
+
+                    <dl class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        <div v-for="fact in facts" :key="fact.label" class="rounded-xl bg-sand px-4 py-3">
+                            <dt class="ui-label-caps">{{ fact.label }}</dt>
+                            <dd class="mt-1 font-heading font-bold text-ink">{{ fact.value }}</dd>
                         </div>
+                    </dl>
+                </Card>
 
-                        <span
-                            v-if="jobOffer.guaranteed_response"
-                            class="inline-block rounded-full bg-secondary-100 px-3 py-1 text-xs font-medium text-secondary-800"
-                        >
-                            Réponse garantie
-                        </span>
-                    </div>
+                <Card v-if="isCandidat" padding="lg">
+                    <h2 class="text-lg font-bold">Votre compatibilité</h2>
+                    <template v-if="jobOffer.skills.length > 0">
+                        <div class="mt-3 flex items-center gap-3">
+                            <ProgressBar :value="compatibilityScore" label="Score de compatibilité" class="flex-1" />
+                            <span class="font-heading text-lg font-bold text-primary-700">{{ compatibilityScore }} %</span>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-600">
+                            {{ compatibilityScore }} % des compétences demandées figurent sur votre profil.
+                            <Link :href="route('profile.edit')" class="font-semibold text-primary-700 underline-offset-2 hover:underline">
+                                Mettre à jour mes compétences
+                            </Link>
+                        </p>
+                    </template>
+                    <p v-else class="mt-2 text-sm text-gray-600">
+                        Cette offre ne précise aucune compétence : nous ne pouvons pas calculer de score de compatibilité.
+                    </p>
+                </Card>
 
-                    <div class="mt-4 flex flex-wrap gap-2 text-sm text-gray-600">
-                        <span class="rounded-full bg-gray-100 px-3 py-1">{{ jobOffer.location }}</span>
-                        <span class="rounded-full bg-gray-100 px-3 py-1">{{ jobOffer.contract_type }}</span>
-                        <span v-if="jobOffer.show_salary && (jobOffer.salary_min || jobOffer.salary_max)" class="rounded-full bg-gray-100 px-3 py-1">
-                            {{ jobOffer.salary_min ?? '?' }} - {{ jobOffer.salary_max ?? '?' }}
-                        </span>
-                        <span v-if="jobOffer.contract_type === 'Stage'" class="rounded-full bg-gray-100 px-3 py-1">
-                            {{ jobOffer.stage_duration_months }} mois — {{ jobOffer.stage_stipend }}/mois
-                        </span>
-                    </div>
+                <Card padding="lg">
+                    <h2 class="text-lg font-bold">Description du poste</h2>
+                    <p class="mt-3 whitespace-pre-line leading-relaxed text-ink">{{ jobOffer.description }}</p>
 
-                    <div class="mt-6">
-                        <h2 class="text-sm font-semibold uppercase text-gray-500">Description</h2>
-                        <p class="mt-2 whitespace-pre-line text-gray-700">{{ jobOffer.description }}</p>
-                    </div>
-
-                    <div class="mt-6" v-if="jobOffer.skills.length > 0">
-                        <h2 class="text-sm font-semibold uppercase text-gray-500">Compétences requises</h2>
-                        <div class="mt-2 flex flex-wrap gap-2">
-                            <span
+                    <template v-if="jobOffer.skills.length > 0">
+                        <h2 class="mt-8 text-lg font-bold">Compétences requises</h2>
+                        <ul class="mt-3 flex flex-wrap gap-2">
+                            <li
                                 v-for="skill in jobOffer.skills"
                                 :key="skill.id"
-                                class="rounded-full bg-tertiary-50 px-3 py-1 text-sm text-tertiary-700"
+                                class="rounded-lg bg-tertiary-50 px-3 py-1.5 text-sm font-semibold text-tertiary-800"
                             >
                                 {{ skill.name }}
-                            </span>
-                        </div>
-                    </div>
+                            </li>
+                        </ul>
+                    </template>
+                </Card>
 
-                    <div class="mt-6">
-                        <h2 class="text-sm font-semibold uppercase text-gray-500">Score de compatibilité</h2>
-                        <div class="mt-2 flex items-center gap-3">
-                            <div class="h-2.5 w-full rounded-full bg-gray-200">
-                                <div
-                                    class="h-2.5 rounded-full bg-primary-600"
-                                    :style="{ width: compatibilityScore + '%' }"
-                                ></div>
-                            </div>
-                            <span class="whitespace-nowrap text-sm font-medium text-gray-700">
-                                {{ compatibilityScore }}%
-                            </span>
-                        </div>
-                    </div>
+                <div v-if="isCandidat" class="px-1">
+                    <button
+                        type="button"
+                        class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-gray-600 hover:text-ink"
+                        :aria-expanded="showReportForm"
+                        aria-controls="formulaire-signalement"
+                        @click="showReportForm = !showReportForm"
+                    >
+                        <Icon name="flag" size="sm" />
+                        Signaler cette offre
+                    </button>
 
-                    <div class="mt-6" v-if="page.props.auth.user.role === 'candidat'">
-                        <PrimaryButton v-if="!hasApplied" @click="apply">
-                            Postuler en un clic
-                        </PrimaryButton>
-                        <PrimaryButton v-else disabled class="opacity-50">
-                            Déjà postulé
-                        </PrimaryButton>
-                    </div>
-
-                    <div class="mt-4" v-if="page.props.auth.user.role === 'candidat'">
-                        <button
-                            type="button"
-                            class="text-xs text-gray-400 underline hover:text-gray-600"
-                            @click="showReportForm = !showReportForm"
-                        >
-                            Signaler cette offre
-                        </button>
-
-                        <form v-if="showReportForm" @submit.prevent="submitReport" class="mt-3 max-w-md">
-                            <textarea
-                                class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                                rows="3"
-                                v-model="reportForm.reason"
-                                placeholder="Expliquez pourquoi cette offre vous paraît suspecte..."
-                                required
-                            ></textarea>
-                            <InputError class="mt-2" :message="reportForm.errors.reason" />
-
-                            <SecondaryButton
-                                type="submit"
-                                class="mt-2"
-                                :disabled="reportForm.processing"
-                            >
-                                Envoyer le signalement
-                            </SecondaryButton>
-                        </form>
-                    </div>
+                    <form
+                        v-if="showReportForm"
+                        id="formulaire-signalement"
+                        class="mt-2 max-w-lg space-y-3"
+                        @submit.prevent="submitReport"
+                    >
+                        <label for="reason" class="text-sm font-semibold text-ink">Pourquoi cette offre vous paraît-elle suspecte ?</label>
+                        <textarea
+                            id="reason"
+                            v-model="reportForm.reason"
+                            class="ui-input"
+                            rows="3"
+                            placeholder="Décrivez ce qui vous a alerté…"
+                            required
+                        ></textarea>
+                        <InputError :message="reportForm.errors.reason" />
+                        <Button type="submit" variant="outlined" :loading="reportForm.processing">
+                            Envoyer le signalement
+                        </Button>
+                    </form>
                 </div>
             </div>
+
+            <aside v-if="isCandidat" class="lg:sticky lg:top-24 lg:self-start">
+                <div
+                    class="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-20 border-t border-gray-200 bg-white p-4 lg:static lg:rounded-2xl lg:border lg:p-5 lg:shadow-card"
+                >
+                    <p class="mb-3 hidden text-sm text-gray-600 lg:block">
+                        Une fois envoyée, votre candidature apparaît dans l’onglet « Candidatures ».
+                    </p>
+                    <Button v-if="!hasApplied" block size="lg" icon="send" :loading="applying" @click="apply">
+                        Postuler en un clic
+                    </Button>
+                    <Button v-else block size="lg" variant="secondary" icon="check" disabled>
+                        Candidature envoyée
+                    </Button>
+                </div>
+            </aside>
         </div>
+
+        <div v-if="isCandidat" class="h-24 lg:hidden" aria-hidden="true"></div>
     </AuthenticatedLayout>
 </template>

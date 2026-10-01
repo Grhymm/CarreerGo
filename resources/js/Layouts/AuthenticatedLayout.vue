@@ -1,299 +1,191 @@
 <script setup>
-import { ref } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import Avatar from '@/Components/ui/Avatar.vue';
+import Button from '@/Components/ui/Button.vue';
+import FlashMessages from '@/Components/ui/FlashMessages.vue';
+import Icon from '@/Components/ui/Icon.vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-const showingNavigationDropdown = ref(false);
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+const spaces = {
+    candidat: 'Espace candidat',
+    recruteur: 'Espace recruteur',
+    admin: 'Administration',
+};
+
+const navigation = computed(() => {
+    const home = { label: 'Accueil', route: 'dashboard', active: 'dashboard', icon: 'home' };
+    const jobs = { label: 'Offres', route: 'jobs.index', active: 'jobs.*', icon: 'search' };
+
+    return {
+        candidat: [
+            home,
+            jobs,
+            { label: 'Candidatures', route: 'applications.index', active: 'applications.*', icon: 'inbox' },
+        ],
+        recruteur: [
+            home,
+            { label: 'Mes offres', route: 'job-offers.index', active: 'job-offers.*', icon: 'briefcase' },
+            { label: 'Candidatures', route: 'recruiter.applications.index', active: 'recruiter.applications.*', icon: 'users' },
+            jobs,
+        ],
+        admin: [
+            { label: 'Modération', route: 'admin.moderation.index', active: 'admin.moderation.*', icon: 'shield' },
+            { label: 'Utilisateurs', route: 'admin.users.index', active: 'admin.users.*', icon: 'users' },
+            { label: 'Signalements', route: 'admin.reports.index', active: 'admin.reports.*', icon: 'flag' },
+            jobs,
+        ],
+    }[user.value.role] ?? [home, jobs];
+});
+
+const profileItem = { label: 'Profil', route: 'profile.edit', active: 'profile.*', icon: 'user' };
+
+const isActive = (item) => route().current(item.active);
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 justify-between">
-                        <div class="flex">
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto"
-                                    />
-                                </Link>
-                            </div>
+    <div class="min-h-screen bg-cream">
+        <a
+            href="#contenu"
+            class="sr-only z-[60] rounded-lg bg-ink px-4 py-2 text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        >
+            Aller au contenu
+        </a>
 
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    Dashboard
-                                </NavLink>
+        <aside class="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-gray-200 bg-white lg:flex">
+            <div class="px-6 pb-6 pt-7">
+                <Link :href="route('dashboard')" class="inline-block">
+                    <ApplicationLogo class="h-8 w-auto" />
+                </Link>
+                <p class="mt-1 text-xs font-semibold text-gray-600">{{ spaces[user.role] }}</p>
+            </div>
 
-                                <NavLink
-                                    :href="route('jobs.index')"
-                                    :active="route().current('jobs.*')"
-                                >
-                                    Offres
-                                </NavLink>
-
-                                <NavLink
-                                    v-if="$page.props.auth.user.role === 'candidat'"
-                                    :href="route('applications.index')"
-                                    :active="route().current('applications.*')"
-                                >
-                                    Mes candidatures
-                                </NavLink>
-
-                                <NavLink
-                                    v-if="$page.props.auth.user.role === 'recruteur'"
-                                    :href="route('job-offers.index')"
-                                    :active="route().current('job-offers.*')"
-                                >
-                                    Mes offres
-                                </NavLink>
-
-                                <NavLink
-                                    v-if="$page.props.auth.user.role === 'recruteur'"
-                                    :href="route('recruiter.applications.index')"
-                                    :active="route().current('recruiter.applications.*')"
-                                >
-                                    Candidatures
-                                </NavLink>
-
-                                <NavLink
-                                    v-if="$page.props.auth.user.role === 'admin'"
-                                    :href="route('admin.moderation.index')"
-                                    :active="route().current('admin.moderation.*')"
-                                >
-                                    Modération
-                                </NavLink>
-
-                                <NavLink
-                                    v-if="$page.props.auth.user.role === 'admin'"
-                                    :href="route('admin.users.index')"
-                                    :active="route().current('admin.users.*')"
-                                >
-                                    Gestion des utilisateurs
-                                </NavLink>
-
-                                <NavLink
-                                    v-if="$page.props.auth.user.role === 'admin'"
-                                    :href="route('admin.reports.index')"
-                                    :active="route().current('admin.reports.*')"
-                                >
-                                    Signalements
-                                </NavLink>
-                            </div>
-                        </div>
-
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div class="relative ms-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                {{ $page.props.auth.user.name }}
-
-                                                <svg
-                                                    class="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
-
-                                    <template #content>
-                                        <DropdownLink
-                                            :href="route('profile.edit')"
-                                        >
-                                            Profile
-                                        </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('logout')"
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden"
+            <nav aria-label="Navigation principale" class="flex-1 space-y-1 px-3">
+                <Link
+                    v-for="item in navigation"
+                    :key="item.route"
+                    :href="route(item.route)"
+                    :aria-current="isActive(item) ? 'page' : undefined"
+                    class="flex min-h-11 items-center gap-3 rounded-lg border-r-4 px-3 text-sm font-semibold transition-colors"
+                    :class="isActive(item)
+                        ? 'border-primary-600 bg-primary-50 text-primary-700'
+                        : 'border-transparent text-gray-700 hover:bg-sand hover:text-ink'"
                 >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-
-                        <ResponsiveNavLink
-                            :href="route('jobs.index')"
-                            :active="route().current('jobs.*')"
-                        >
-                            Offres
-                        </ResponsiveNavLink>
-
-                        <ResponsiveNavLink
-                            v-if="$page.props.auth.user.role === 'candidat'"
-                            :href="route('applications.index')"
-                            :active="route().current('applications.*')"
-                        >
-                            Mes candidatures
-                        </ResponsiveNavLink>
-
-                        <ResponsiveNavLink
-                            v-if="$page.props.auth.user.role === 'recruteur'"
-                            :href="route('job-offers.index')"
-                            :active="route().current('job-offers.*')"
-                        >
-                            Mes offres
-                        </ResponsiveNavLink>
-
-                        <ResponsiveNavLink
-                            v-if="$page.props.auth.user.role === 'recruteur'"
-                            :href="route('recruiter.applications.index')"
-                            :active="route().current('recruiter.applications.*')"
-                        >
-                            Candidatures
-                        </ResponsiveNavLink>
-
-                        <ResponsiveNavLink
-                            v-if="$page.props.auth.user.role === 'admin'"
-                            :href="route('admin.moderation.index')"
-                            :active="route().current('admin.moderation.*')"
-                        >
-                            Modération
-                        </ResponsiveNavLink>
-
-                        <ResponsiveNavLink
-                            v-if="$page.props.auth.user.role === 'admin'"
-                            :href="route('admin.users.index')"
-                            :active="route().current('admin.users.*')"
-                        >
-                            Gestion des utilisateurs
-                        </ResponsiveNavLink>
-
-                        <ResponsiveNavLink
-                            v-if="$page.props.auth.user.role === 'admin'"
-                            :href="route('admin.reports.index')"
-                            :active="route().current('admin.reports.*')"
-                        >
-                            Signalements
-                        </ResponsiveNavLink>
-                    </div>
-
-                    <div
-                        class="border-t border-gray-200 pb-1 pt-4"
-                    >
-                        <div class="px-4">
-                            <div
-                                class="text-base font-medium text-gray-800"
-                            >
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
-                            </div>
-                        </div>
-
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
-                            >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
-                </div>
+                    <Icon :name="item.icon" />
+                    {{ item.label }}
+                </Link>
             </nav>
 
-            <header
-                class="bg-white shadow"
-                v-if="$slots.header"
-            >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <slot name="header" />
+            <div class="space-y-1 border-t border-gray-200 p-3">
+                <Button
+                    v-if="user.role === 'recruteur'"
+                    :href="route('job-offers.create')"
+                    icon="plus"
+                    block
+                    class="mb-3"
+                >
+                    Publier une offre
+                </Button>
+                <Link
+                    :href="route('profile.edit')"
+                    :aria-current="isActive(profileItem) ? 'page' : undefined"
+                    class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition-colors"
+                    :class="isActive(profileItem) ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-sand hover:text-ink'"
+                >
+                    <Icon name="user" />
+                    Mon profil
+                </Link>
+                <Link
+                    :href="route('logout')"
+                    method="post"
+                    as="button"
+                    class="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-sand hover:text-ink"
+                >
+                    <Icon name="logout" />
+                    Se déconnecter
+                </Link>
+            </div>
+        </aside>
+
+        <div class="lg:pl-64">
+            <header class="sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur">
+                <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+                    <Link :href="route('dashboard')" class="lg:hidden">
+                        <ApplicationLogo class="h-7 w-auto" />
+                    </Link>
+                    <p class="hidden text-sm text-gray-600 lg:block">
+                        Bonjour, <span class="font-semibold text-ink">{{ user.name }}</span>
+                    </p>
+
+                    <Dropdown align="right" width="48" content-classes="bg-white py-1">
+                        <template #trigger>
+                            <button
+                                type="button"
+                                class="inline-flex min-h-11 items-center gap-2 rounded-full p-1 pe-2 text-sm font-semibold text-ink hover:bg-sand"
+                            >
+                                <Avatar :name="user.name" size="sm" />
+                                <span class="hidden max-w-[10rem] truncate sm:inline">{{ user.name }}</span>
+                                <Icon name="chevronDown" size="sm" />
+                                <span class="sr-only">Ouvrir le menu du compte</span>
+                            </button>
+                        </template>
+
+                        <template #content>
+                            <div class="border-b border-gray-200 px-4 py-3">
+                                <p class="truncate text-sm font-semibold text-ink">{{ user.name }}</p>
+                                <p class="truncate text-xs text-gray-600">{{ user.email }}</p>
+                            </div>
+                            <DropdownLink :href="route('profile.edit')">
+                                <Icon name="user" size="sm" />
+                                Mon profil
+                            </DropdownLink>
+                            <DropdownLink :href="route('logout')" method="post" as="button">
+                                <Icon name="logout" size="sm" />
+                                Se déconnecter
+                            </DropdownLink>
+                        </template>
+                    </Dropdown>
                 </div>
             </header>
 
-            <main>
+            <main id="contenu" class="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-12 lg:pt-8">
+                <div v-if="$slots.header" class="mb-6">
+                    <slot name="header" />
+                </div>
+
+                <FlashMessages class="mb-6" />
+
                 <slot />
             </main>
         </div>
+
+        <nav
+            aria-label="Navigation principale"
+            class="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] lg:hidden"
+        >
+            <ul class="mx-auto flex max-w-md justify-around">
+                <li v-for="item in [...navigation, profileItem]" :key="item.route" class="flex-1">
+                    <Link
+                        :href="route(item.route)"
+                        :aria-current="isActive(item) ? 'page' : undefined"
+                        class="flex min-h-16 flex-col items-center justify-center gap-1 text-[0.6875rem] font-semibold"
+                        :class="isActive(item) ? 'text-primary-700' : 'text-gray-600'"
+                    >
+                        <span
+                            class="inline-flex h-8 w-12 items-center justify-center rounded-full transition-colors"
+                            :class="isActive(item) ? 'bg-primary-600 text-white' : ''"
+                        >
+                            <Icon :name="item.icon" />
+                        </span>
+                        {{ item.label }}
+                    </Link>
+                </li>
+            </ul>
+        </nav>
     </div>
 </template>

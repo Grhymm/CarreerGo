@@ -1,72 +1,105 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Avatar from '@/Components/ui/Avatar.vue';
+import Badge from '@/Components/ui/Badge.vue';
+import Button from '@/Components/ui/Button.vue';
+import EmptyState from '@/Components/ui/EmptyState.vue';
+import PageHeader from '@/Components/ui/PageHeader.vue';
+import StatCard from '@/Components/ui/StatCard.vue';
+import Tabs from '@/Components/ui/Tabs.vue';
+import { formatDate } from '@/utils/format';
+import { applicationStatuses } from '@/utils/status';
 import { Head, Link } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
-defineProps({
+const props = defineProps({
     applications: Array,
 });
 
-const statusBadges = {
-    new: { label: 'Nouvelle', classes: 'bg-tertiary-100 text-tertiary-800' },
-    reviewing: { label: 'À l\'étude', classes: 'bg-secondary-100 text-secondary-800' },
-    interview: { label: 'Entretien', classes: 'bg-primary-100 text-primary-800' },
-    rejected: { label: 'Refusée', classes: 'bg-gray-100 text-gray-700' },
-    accepted: { label: 'Acceptée', classes: 'bg-primary-600 text-white' },
-};
+const finished = ['rejected', 'accepted'];
+
+const groups = computed(() => ({
+    all: props.applications,
+    ongoing: props.applications.filter((application) => !finished.includes(application.status)),
+    finished: props.applications.filter((application) => finished.includes(application.status)),
+}));
+
+const activeTab = ref('all');
+
+const tabs = computed(() => [
+    { value: 'all', label: 'Toutes', count: groups.value.all.length },
+    { value: 'ongoing', label: 'En cours', count: groups.value.ongoing.length },
+    { value: 'finished', label: 'Terminées', count: groups.value.finished.length },
+]);
+
+const interviewCount = computed(
+    () => props.applications.filter((application) => application.status === 'interview').length,
+);
 </script>
 
 <template>
     <Head title="Mes candidatures" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Mes candidatures
-            </h2>
-        </template>
+        <PageHeader title="Mes candidatures" description="Suivez l’avancement de chacune de vos candidatures." />
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Poste</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Entreprise</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Postulée le</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <tr v-if="applications.length === 0">
-                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">
-                                    Vous n'avez postulé à aucune offre pour l'instant.
-                                </td>
-                            </tr>
-                            <tr v-for="application in applications" :key="application.id">
-                                <td class="px-6 py-4">
-                                    <Link
-                                        :href="route('jobs.show', application.job_offer.id)"
-                                        class="text-tertiary-600 hover:text-tertiary-800"
-                                    >
-                                        {{ application.job_offer.title }}
-                                    </Link>
-                                </td>
-                                <td class="px-6 py-4">{{ application.job_offer.company.name }}</td>
-                                <td class="px-6 py-4">{{ new Date(application.applied_at).toLocaleDateString('fr-FR') }}</td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="rounded-full px-3 py-1 text-xs font-medium"
-                                        :class="statusBadges[application.status].classes"
-                                    >
-                                        {{ statusBadges[application.status].label }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div v-if="applications.length > 0" class="mt-6 grid grid-cols-2 gap-3 sm:max-w-xl">
+            <StatCard tone="primary" icon="send" :value="applications.length" label="Candidatures envoyées" />
+            <StatCard tone="accent" icon="calendar" :value="interviewCount" label="Au stade de l’entretien" />
         </div>
+
+        <EmptyState
+            v-if="applications.length === 0"
+            class="mt-8"
+            icon="send"
+            title="Vous n’avez pas encore postulé"
+            description="Parcourez les offres disponibles et postulez en un clic."
+        >
+            <Button :href="route('jobs.index')" icon="search">Explorer les offres</Button>
+        </EmptyState>
+
+        <template v-else>
+            <Tabs v-model="activeTab" :options="tabs" label="Filtrer les candidatures" class="mt-8" />
+
+            <ul class="mt-4 space-y-3">
+                <li
+                    v-for="application in groups[activeTab]"
+                    :key="application.id"
+                    class="rounded-2xl border border-gray-200 bg-white p-4 shadow-card sm:p-5"
+                >
+                    <div class="flex items-start gap-3">
+                        <Avatar :name="application.job_offer.company.name" square />
+                        <div class="min-w-0 flex-1">
+                            <Link
+                                :href="route('jobs.show', application.job_offer.id)"
+                                class="font-heading text-base font-bold text-ink hover:text-primary-700 hover:underline"
+                            >
+                                {{ application.job_offer.title }}
+                            </Link>
+                            <p class="text-sm text-gray-600">
+                                {{ application.job_offer.company.name }} · {{ application.job_offer.location }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
+                        <Badge :tone="applicationStatuses[application.status].tone" dot>
+                            {{ applicationStatuses[application.status].label }}
+                        </Badge>
+                        <p class="text-xs text-gray-600">
+                            <template v-if="finished.includes(application.status)">
+                                Mise à jour le {{ formatDate(application.updated_at) }}
+                            </template>
+                            <template v-else>
+                                Envoyée le {{ formatDate(application.applied_at) }}
+                            </template>
+                        </p>
+                    </div>
+                </li>
+                <li v-if="groups[activeTab].length === 0" class="py-6 text-center text-sm text-gray-600">
+                    Aucune candidature dans cette catégorie.
+                </li>
+            </ul>
+        </template>
     </AuthenticatedLayout>
 </template>

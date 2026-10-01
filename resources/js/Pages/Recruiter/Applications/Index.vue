@@ -1,5 +1,12 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Avatar from '@/Components/ui/Avatar.vue';
+import Badge from '@/Components/ui/Badge.vue';
+import EmptyState from '@/Components/ui/EmptyState.vue';
+import Icon from '@/Components/ui/Icon.vue';
+import PageHeader from '@/Components/ui/PageHeader.vue';
+import { formatRelative } from '@/utils/format';
+import { recruiterApplicationStatuses } from '@/utils/status';
 import { Head, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -8,21 +15,24 @@ const props = defineProps({
 });
 
 const columns = [
-    { status: 'new', label: 'Nouvelles' },
-    { status: 'reviewing', label: 'À l\'étude' },
-    { status: 'interview', label: 'Entretien' },
+    { status: 'new', dot: 'bg-secondary-600' },
+    { status: 'reviewing', dot: 'bg-primary-600' },
+    { status: 'interview', dot: 'bg-tertiary-600' },
+    { status: 'accepted', dot: 'bg-primary-800' },
+    { status: 'rejected', dot: 'bg-red-700' },
 ];
 
-const statusOptions = [
-    { value: 'new', label: 'Nouvelle' },
-    { value: 'reviewing', label: 'À l\'étude' },
-    { value: 'interview', label: 'Entretien' },
-    { value: 'rejected', label: 'Refusée' },
-    { value: 'accepted', label: 'Acceptée' },
-];
+const statusOptions = Object.entries(recruiterApplicationStatuses).map(([value, status]) => ({
+    value,
+    label: status.label,
+}));
 
 const applicationsByStatus = computed(() => (status) =>
     props.applications.filter((application) => application.status === status)
+);
+
+const activeCount = computed(
+    () => props.applications.filter((application) => !['accepted', 'rejected'].includes(application.status)).length,
 );
 
 const changeStatus = (application, event) => {
@@ -38,63 +48,79 @@ const changeStatus = (application, event) => {
     <Head title="Candidatures reçues" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Candidatures reçues
-            </h2>
-        </template>
+        <PageHeader title="Candidatures reçues" description="Faites avancer chaque candidat en changeant son statut.">
+            <template #actions>
+                <p class="text-sm text-gray-600">
+                    <span class="font-heading text-xl font-bold text-ink">{{ activeCount }}</span>
+                    candidature{{ activeCount > 1 ? 's' : '' }} en cours
+                </p>
+            </template>
+        </PageHeader>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                    <div v-for="column in columns" :key="column.status">
-                        <h3 class="mb-3 text-sm font-semibold uppercase text-gray-500">
-                            {{ column.label }}
-                            <span class="text-gray-400">({{ applicationsByStatus(column.status).length }})</span>
-                        </h3>
+        <EmptyState
+            v-if="applications.length === 0"
+            class="mt-8"
+            icon="users"
+            title="Aucune candidature reçue pour l’instant"
+            description="Les candidatures à vos offres publiées apparaîtront ici."
+        />
 
-                        <div class="space-y-3">
-                            <div
-                                v-for="application in applicationsByStatus(column.status)"
-                                :key="application.id"
-                                class="bg-white p-4 shadow-sm sm:rounded-lg"
-                            >
-                                <p class="font-medium text-gray-900">{{ application.candidate_name }}</p>
-                                <p class="mt-1 text-sm text-gray-600">{{ application.job_offer_title }}</p>
+        <div v-else class="-mx-4 mt-8 overflow-x-auto px-4 pb-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+            <div class="flex snap-x snap-mandatory gap-4">
+                <section
+                    v-for="column in columns"
+                    :key="column.status"
+                    class="w-72 shrink-0 snap-start rounded-2xl bg-sand/70 p-3"
+                    :aria-labelledby="`colonne-${column.status}`"
+                >
+                    <h2 :id="`colonne-${column.status}`" class="mb-3 flex items-center justify-between px-1">
+                        <span class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink">
+                            <span class="h-2 w-2 rounded-full" :class="column.dot" aria-hidden="true"></span>
+                            {{ recruiterApplicationStatuses[column.status].label }}
+                        </span>
+                        <span class="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-gray-700">
+                            {{ applicationsByStatus(column.status).length }}
+                        </span>
+                    </h2>
 
-                                <div class="mt-3 flex items-center gap-2">
-                                    <div class="h-2 w-full rounded-full bg-gray-200">
-                                        <div
-                                            class="h-2 rounded-full bg-primary-600"
-                                            :style="{ width: application.compatibility_score + '%' }"
-                                        ></div>
-                                    </div>
-                                    <span class="whitespace-nowrap text-xs font-medium text-gray-600">
-                                        {{ application.compatibility_score }}%
-                                    </span>
-                                </div>
+                    <ul class="space-y-3">
+                        <li
+                            v-for="application in applicationsByStatus(column.status)"
+                            :key="application.id"
+                            class="rounded-xl border border-gray-200 bg-white p-4 shadow-card"
+                        >
+                            <div class="flex items-start justify-between gap-2">
+                                <Avatar :name="application.candidate_name" />
+                                <Badge tone="tertiary">{{ application.compatibility_score }} % compatible</Badge>
+                            </div>
+                            <p class="mt-3 font-semibold text-ink">{{ application.candidate_name }}</p>
+                            <p class="text-sm text-gray-600">{{ application.job_offer_title }}</p>
 
-                                <select
-                                    class="mt-3 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                                    :value="application.status"
-                                    @change="changeStatus(application, $event)"
-                                >
-                                    <option
-                                        v-for="option in statusOptions"
-                                        :key="option.value"
-                                        :value="option.value"
-                                    >
-                                        {{ option.label }}
-                                    </option>
-                                </select>
+                            <div class="mt-3 flex items-center gap-1 border-t border-gray-100 pt-3 text-xs text-gray-600">
+                                <Icon name="clock" size="xs" />
+                                Reçue {{ formatRelative(application.applied_at) }}
                             </div>
 
-                            <p v-if="applicationsByStatus(column.status).length === 0" class="text-sm text-gray-500">
-                                Aucune candidature.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                            <label :for="`statut-${application.id}`" class="sr-only">
+                                Statut de la candidature de {{ application.candidate_name }}
+                            </label>
+                            <select
+                                :id="`statut-${application.id}`"
+                                class="ui-input mt-3"
+                                :value="application.status"
+                                @change="changeStatus(application, $event)"
+                            >
+                                <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                                    {{ option.label }}
+                                </option>
+                            </select>
+                        </li>
+
+                        <li v-if="applicationsByStatus(column.status).length === 0" class="px-1 py-4 text-center text-sm text-gray-600">
+                            Aucune candidature.
+                        </li>
+                    </ul>
+                </section>
             </div>
         </div>
     </AuthenticatedLayout>
